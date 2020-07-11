@@ -47,13 +47,15 @@ export default {
 
 	methods: {
 
-		onReady: callback => {
+		onReady ( callback ) {
 			setTimeout( () => callback( { supports_search: false } ), 0)
 		},
 
-		resolveSymbol: async ( symbolName, onSymbolResolvedCallback, onResolveErrorCallback ) => {
+		resolveSymbol ( symbolName, onSymbolResolvedCallback, onResolveErrorCallback ) {
 
-			getSymbolStub( symbolName ).then( res => {
+			console.log( this.tradingViewInterval )
+
+			getSymbolStub( symbolName, this.tradingViewInterval ).then( res => {
 
 				if( res.error ) {
 					onResolveErrorCallback( res.error )
@@ -67,7 +69,7 @@ export default {
 
 		},
 
-		getBars: (symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) => {
+		getBars(symbolInfo, resolution, from, to, onHistoryCallback, onErrorCallback, firstDataRequest) {
 
 			let candles = []
 			from *= 1000
@@ -226,7 +228,7 @@ export default {
 
 }
 
-export async function getSymbolStub( symbolName ) {
+export async function getSymbolStub( symbolName, timeframe ) {
 
 	let data
 
@@ -258,7 +260,7 @@ export async function getSymbolStub( symbolName ) {
 			minmov: 5,
 			pricescale: 100,
 			has_intraday: true,
-			intraday_multipliers: ['1', '3', '5', '10', '15', '30', '60'],
+			intraday_multipliers: [ timeframe.toString() ],
 			has_daily: true,
 			instrument_token: data.instrument_token
 		}
