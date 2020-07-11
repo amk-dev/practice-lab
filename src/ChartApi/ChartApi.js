@@ -41,6 +41,16 @@ export default {
 				'60minute': '60',
 				'day': 'D'
 			}[this.session.timeframe]
+		},
+
+		supported_resolutions() {
+
+			let resolutions = [ '1', '3', '5', '10', '15', '30', '60', '120', '240' ]
+
+			console.log( this.tradingViewInterval )
+
+			return resolutions.filter( ( resolution ) => { return parseInt(resolution) >= parseInt( this.tradingViewInterval ) } )
+
 		}
 
 	},
@@ -48,12 +58,20 @@ export default {
 	methods: {
 
 		onReady ( callback ) {
-			setTimeout( () => callback( { supports_search: false } ), 0)
+
+			let that = this
+
+			console.log( that.supported_resolutions )
+
+			setTimeout( () => callback( { 
+
+				supports_search: false,
+				supported_resolutions: that.supported_resolutions
+
+			} ), 0)
 		},
 
 		resolveSymbol ( symbolName, onSymbolResolvedCallback, onResolveErrorCallback ) {
-
-			console.log( this.tradingViewInterval )
 
 			getSymbolStub( symbolName, this.tradingViewInterval ).then( res => {
 
@@ -261,7 +279,7 @@ export async function getSymbolStub( symbolName, timeframe ) {
 			pricescale: 100,
 			has_intraday: true,
 			intraday_multipliers: [ timeframe.toString() ],
-			has_daily: true,
+			has_daily: false,
 			instrument_token: data.instrument_token
 		}
 
@@ -380,7 +398,7 @@ export async function subscribeBarsSession(symbolInfo, resolution, onRealtimeCal
 	let sessionFrom = this.session.startDate
 	let sessionTo = this.session.endDate
 
-	let kiteResolution = getResolutionString( resolution )
+	let kiteResolution = getResolutionString( this.tradingViewInterval )
 	let url = 'http://localhost:8080/candles/'+ symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ sessionFrom +'&to='+ sessionTo
 
 	if( symbolInfo.type == 'NFO-FUT' && resolution == 'D' ) {
@@ -452,22 +470,3 @@ function getRequestFromAndTo( from, to, session_from, session_to ) {
     return false
 
 }
-
-// buy( type, quantity, price)
-// buy( 'market', buy )
-// buy( 'limit', quantity, price )
-// buy( 'stoploss', quantity, price )
-
-// New Session
-// Enters Symbol, Timeframe, From, To, Capital
-// Session Is Inserted On Firebase, Once Completed It Is Inserted On To The Vuex Sessions Store ( Message To User "We're Creating Session" )
-// A New URL /sessions/:sessionid opens up
-// we get the symbol, timeframe and other info from the store
-// loads data
-// everything set. Start Replay 
-
-// User Has To Place An Order
-// User Enters An Order, Order Is Placed On The Server And Is Added To Orders, An Orderline Is Placed
-// everytime lastbar is changed orders are checked for fill
-// if filled user is shown a message, that their order is filled
-// Top Buttons - End,Pause,Profit	
