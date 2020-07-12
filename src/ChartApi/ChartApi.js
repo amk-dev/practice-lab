@@ -47,8 +47,6 @@ export default {
 
 			let resolutions = [ '1', '3', '5', '10', '15', '30', '60', '120', '240' ]
 
-			console.log( this.tradingViewInterval )
-
 			return resolutions.filter( ( resolution ) => { return parseInt(resolution) >= parseInt( this.tradingViewInterval ) } )
 
 		}
@@ -60,8 +58,6 @@ export default {
 		onReady ( callback ) {
 
 			let that = this
-
-			console.log( that.supported_resolutions )
 
 			setTimeout( () => callback( { 
 
@@ -97,7 +93,7 @@ export default {
 			to = moment( to ).format('YYYY-MM-DD')
 
 			let kiteResolution = getResolutionString( resolution )
-			let url = 'http://localhost:8080/candles/'+ symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ from +'&to='+ to
+			let url = this.$store.getters.apiBaseUrl + '/candles/'+ symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ from +'&to='+ to
 
 			if( symbolInfo.type == 'NFO-FUT' && resolution == 'D' ) {
 				url += '&continuous=1'
@@ -116,9 +112,6 @@ export default {
 	},
 
 	mounted() {
-
-		console.log('Hey i\'m getting mounted')
-		console.log(this.session)
 
 		let TradeGarageDataFeed = {
 			onReady: this.onReady,
@@ -362,12 +355,20 @@ export function getBarsSession (symbolInfo, resolution, from, to, onHistoryCallb
 	from = moment( from ).format('YYYY-MM-DD')
 	to = moment( to ).format('YYYY-MM-DD')
 
-	let requestFromTo = getRequestFromAndTo(from, to, sessionFrom, sessionTo)
+	let requestFromTo = getRequestFromAndTo(from, to, sessionFrom, sessionTo, resolution)
 
-	if( requestFromTo ) {
+	if( requestFromTo.invalid ) {
+
+		onHistoryCallback( [], { nodData: false } )
+
+	} else if( requestFromTo.noData ) {
+
+		onHistoryCallback([], { noData: true })
+
+	} else {
 
 		let kiteResolution = getResolutionString( resolution )
-		let url = 'http://localhost:8080/candles/'+ symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ requestFromTo['from'] +'&to='+ requestFromTo['to']
+		let url = this.$store.getters.apiBaseUrl + '/candles/'+ symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ requestFromTo['from'] +'&to='+ requestFromTo['to']
 
 		if( symbolInfo.type == 'NFO-FUT' && resolution == 'D' ) {
 			url += '&continuous=1'
@@ -384,8 +385,6 @@ export function getBarsSession (symbolInfo, resolution, from, to, onHistoryCallb
 
 		} )
 
-	} else {
-		onHistoryCallback([], { noData: false })
 	}
 }
 
@@ -393,13 +392,11 @@ export async function subscribeBarsSession(symbolInfo, resolution, onRealtimeCal
 
 	// Get All The Data For The Requested Period.
 
-	console.log('Calling Subscribe Bars')
-
 	let sessionFrom = this.session.startDate
 	let sessionTo = this.session.endDate
 
 	let kiteResolution = getResolutionString( this.tradingViewInterval )
-	let url = 'http://localhost:8080/candles/'+ symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ sessionFrom +'&to='+ sessionTo
+	let url = this.$store.getters.apiBaseUrl + '/candles/' + symbolInfo.instrument_token + '/' + kiteResolution + '?from='+ sessionFrom +'&to='+ sessionTo
 
 	if( symbolInfo.type == 'NFO-FUT' && resolution == 'D' ) {
 		url += '&continuous=1'
@@ -408,8 +405,6 @@ export async function subscribeBarsSession(symbolInfo, resolution, onRealtimeCal
 	let that = this
 
 	getCandles( url, kiteResolution ).then( candles => {
-
-		console.log( candles )
 
 		if( candles.candles ) {
 
@@ -450,23 +445,64 @@ export async function subscribeBarsSession(symbolInfo, resolution, onRealtimeCal
 	// And With Specific Interval Pass That To onRealtimeCallback.	
 }
 
-function getRequestFromAndTo( from, to, session_from, session_to ) {
+// TODO: Make Sure You Test This Function
+function getRequestFromAndTo( from, to, session_from, session_to, resolution ) {
 
 	from = moment(from, "YYYY-MM-DD HH:MM:mm")
 	to = moment(to, "YYYY-MM-DD HH:MM:mm")
 	session_from = moment(session_from, "YYYY-MM-DD HH:MM:mm")
 	session_to = moment(session_to, "YYYY-MM-DD HH:MM:mm")
 
-	if( from.isAfter(session_from) && to.isAfter( session_to ) ) {
-		return false
-    }
+	let requestFromAndTo
+
+	let historyLimits = {
+		'1': 60,
+		'3': 100,
+		'5': 100,
+		'10': 100,
+		'15': 200,
+		'30': 200,
+		'60': 400,
+		'D': 2000
+	}
+
+	// get the from and to w.r.t session from and to
+
 	if( from.isBefore(session_from) && ( to.isAfter( session_from ) || to.isSame(session_from) ) ) {
-		return  { from: from.format("YYYY-MM-DD HH:MM:mm"), to: session_from.subtract(1, 'days').format("YYYY-MM-DD HH:MM:mm")  }
-    }
-    if( from.isBefore( session_from ) && to.isBefore(session_from) ) {
-        return { from: from.format("YYYY-MM-DD HH:MM:mm"), to: to.format("YYYY-MM-DD HH:MM:mm") }
+
+		requestFromAndTo = { from: from.format("YYYY-MM-DD HH:MM:mm"), to: session_from.subtract(1, 'days').format("YYYY-MM-DD HH:MM:mm")  }
+
+    } else if( from.isBefore( session_from ) && to.isBefore(session_from) ) {
+
+        requestFromAndTo =  { from: from.format("YYYY-MM-DD HH:MM:mm"), to: to.format("YYYY-MM-DD HH:MM:mm") }
+
+    } else {
+
+    	requestFromAndTo = { invalid: true }
+
     }
 
-    return false
+    /*  check if the current request period could cause an interval exceeded issue from kite api. 
+    	this implementation has a possible chance of missing some candles from the last day. 
+    */
+
+    if( requestFromAndTo.from ) {
+
+    	let lastAvailableDay = moment().subtract( historyLimits[ resolution ], 'days' )
+		let requestFrom = moment(requestFromAndTo.from, 'YYYY-MM-DD')
+		let requestTo = moment(requestFromAndTo.to, 'YYYY-MM-DD')
+
+		if( requestFrom.isBefore( lastAvailableDay ) ) {
+			requestFromAndTo = { from: lastAvailableDay.format("YYYY-MM-DD HH:MM:mm"), to: to.format("YYYY-MM-DD HH:MM:mm") }
+		}
+
+		// handle noData
+		if( requestFrom.isBefore( lastAvailableDay ) && requestTo.isBefore( lastAvailableDay ) ) {
+			requestFromAndTo = { noData: true }
+		}
+
+    }
+	
+    return requestFromAndTo
 
 }

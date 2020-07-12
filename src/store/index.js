@@ -37,6 +37,13 @@ export default new Vuex.Store({
 	modules: {
 		Session, Orders, Notifications
 	},
-
-	plugins: [ chartingLibraryOrderLineRemover ]
+	plugins: [ chartingLibraryOrderLineRemover ],
+	state: {
+		apiBaseUrl: 'http://localhost:8080'
+	},
+	getters: {
+		apiBaseUrl( state ) {
+			return state.apiBaseUrl
+		}
+	}
 });
