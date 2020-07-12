@@ -1,10 +1,13 @@
 /* eslint-disable */
 import Vue from "vue";
 import Vuex from "vuex";
+
 import createLogger from 'vuex/dist/logger'
+
 import Session from './Session/Session.js'
 import Orders from './Orders/Orders.js'
 import Notifications from './Notifications/Notifications.js'
+import API from './Api/Api.js'
 
 Vue.use(Vuex);
 
@@ -35,15 +38,7 @@ const chartingLibraryOrderLineRemover = store => {
 
 export default new Vuex.Store({
 	modules: {
-		Session, Orders, Notifications
+		Session, Orders, Notifications, API
 	},
-	plugins: [ chartingLibraryOrderLineRemover ],
-	state: {
-		apiBaseUrl: 'http://localhost:8080'
-	},
-	getters: {
-		apiBaseUrl( state ) {
-			return state.apiBaseUrl
-		}
-	}
+	plugins: [ chartingLibraryOrderLineRemover ]
 });
