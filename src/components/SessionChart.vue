@@ -103,6 +103,8 @@
 	import PnLBox from './Orders/PnLBox.vue'
 	import Orders from './Orders/Orders.vue'
 	import BarSpeed from './BarSpeed/BarSpeed.vue'
+	import ModalComponent from './Generic/ModalComponent.vue'
+	import InChartSessionDetails from './Details/InChartSessionDetails.vue'
 
 	ChartApiMixin.methods.getBars = getBarsSession
 	ChartApiMixin.methods.subscribeBars = subscribeBarsSession
