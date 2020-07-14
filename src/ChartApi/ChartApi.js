@@ -21,6 +21,7 @@ export default {
 				pnlBox: false,
 				orders: false
 			},
+			sessionDetailsModal: false,
 			active: null,
 			speed: 1,
 			errors: {}
@@ -231,7 +232,18 @@ export default {
 
 		    });
 		    buttonOrders.textContent = "Orders"
-		    
+
+		    let buttonSessionDetails = tvWidget.createButton({
+		    	align: 'right'
+		    });
+			buttonSessionDetails.setAttribute('title', 'Current Session Details')
+			buttonSessionDetails.textContent = 'Current Session'
+			buttonSessionDetails.addEventListener('click', function() { 
+
+		    	that.sessionDetailsModal = true
+
+		    });
+			    
 
 		});
 

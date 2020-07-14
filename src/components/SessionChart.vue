@@ -78,7 +78,15 @@
 
 		</transition>	
 
+		<transition name="fade">
+		<modal-component v-model="sessionDetailsModal">
+			
+			<in-chart-session-details @closeModal=" sessionDetailsModal = false "></in-chart-session-details>
 	
+		</modal-component>
+		</transition>
+
+
 		<notifications></notifications>
 
 	</div>
@@ -94,6 +102,7 @@
 	import Notifications from './Generic/Notifications.vue'
 	import PnLBox from './Orders/PnLBox.vue'
 	import Orders from './Orders/Orders.vue'
+	import BarSpeed from './BarSpeed/BarSpeed.vue'
 
 	ChartApiMixin.methods.getBars = getBarsSession
 	ChartApiMixin.methods.subscribeBars = subscribeBarsSession
