@@ -20,7 +20,7 @@
 
 			<tbody>
 
-				<tr v-for="order in allOrders " :key="order.orderId" >
+				<tr v-for="order in ordersReversed " :key="order.orderId" >
 					
 					<td>
 						<span class="tag" :class="{ 'is-link': order.side == 'buy', 'is-danger': order.side == 'sell' }">
@@ -70,11 +70,11 @@
 		name: 'Orders',
 		computed: {
 
-			...mapGetters(['allOrders', 'filledOrders', 'openOrders', 'lastPrice']),
+			...mapGetters(['allOrders', 'lastPrice']),
 
-			orderChanged() {
+			ordersReversed() {
 
-				return allOrders
+				return this.allOrders.slice().reverse()
 
 			}
 
