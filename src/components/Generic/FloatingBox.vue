@@ -1,6 +1,7 @@
 <template>
 	
-	<div class="box floating-box" ref="floatingBoxContainer">
+	<div class="box floating-box" :class=" { 'is-on-top': currentlyActiveBox == boxId } " ref="floatingBoxContainer" v-if="isVisible" @click="$emit('update:currently-active-box', boxId)">
+		
 		<div class="level">
 			<div class="level-left">
 				<div class="icon level-item item-move">
@@ -13,9 +14,10 @@
 				</div>
 			</div>
 			<div class="level-right">
-				<a class="delete" @click="$emit('close')"></a>
+				<a class="delete" @click="$emit('close', false)"></a>
 			</div>
 		</div>
+
 		<slot></slot>
 		
 	</div>
@@ -25,7 +27,11 @@
 <script>
 	export default {
 		name: 'FloatingBox',
-		props: ['title', 'zIndex'],
+		model: {
+			prop: 'is-visible',
+			event: 'close'
+		},
+		props: ['is-visible', 'title', 'currently-active-box', 'box-id'],
 		data: function() {
 			return {
 				currentX: null,
@@ -37,11 +43,6 @@
 			}
 		},
 
-		mounted() {
-
-			console.log('Your Z-Index Is ', this.zIndex)
-
-		}
 	}
 </script>
 
@@ -53,12 +54,13 @@
 		max-height: 70%;
 		overflow-y: auto;
 	}
+	.is-on-top {
+		z-index: 1
+	}
 	.item-move {
 		cursor: move;
 	}
 	.level-center .title {
-
 		margin: 0 20px;
-
 	}
 </style>
