@@ -37,6 +37,36 @@ export default {
 				}
 			else
 				return null
+		},
+
+		sessionName: ( state ) => {
+
+			return state.name
+
+		},
+
+		symbol: ( state ) => {
+
+			return state.symbol
+
+		},
+
+		timeframe: ( state ) => {
+
+			return state.timeframe
+
+		},
+
+		startDate: ( state ) => {
+
+			return state.startDate
+
+		},
+
+		endDate: ( state ) => {
+
+			return state.endDate
+
 		}
 	
 	},

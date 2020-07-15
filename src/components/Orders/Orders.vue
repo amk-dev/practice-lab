@@ -2,7 +2,7 @@
 
 	<div class="content orders-wrapper">
 		
-		<table class="table">
+		<table class="table" :class="{ 'hidden-with-space': allOrders.length == 0 }">
 			
 			<thead>
 				
@@ -114,7 +114,10 @@
 
 	}	
 
-	.orders-wrapper {
+	.hidden-with-space {
+
+		visibility: collapse;
+		margin: 0 !important;
 
 	}
 
