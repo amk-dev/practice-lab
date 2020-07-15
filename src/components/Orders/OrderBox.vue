@@ -1,6 +1,9 @@
 <template>
 	<div>
 		<form class="form" @submit.prevent="function() { checkBuyOrderForm( {...order[ side ]} ) }" novalidate="true">
+
+			<!-- Order Type Start -->
+
 			<div class="field">
 				<div class="control">
 					<label :for="prependWithSide('order-type-market')" class="radio">
@@ -37,25 +40,65 @@
 				</div>
 			</div>
 
+			<div class="field" v-if="errors.orderType">
+				
+				<span class="tag is-danger"> {{ errors.orderType }} </span>
+
+			</div>
+
+			<!-- Order Type End -->
+
+			<!-- Order Price Start -->
+
 			<div class="field">
+
 				<label :for="prependWithSide('order-price')" class="label">price</label>
+				
 				<div class="control">
 					<input :id="prependWithSide('order-price')" type="number" class="input" min="0" step="0.05" placeholder="enter price" v-model="order[ side ].limitPrice" :disabled="order[ side ].type == prependWithSide('market')" required>
 				</div>
+
 			</div>
 
+			<div class="field" v-if="errors.price">
+				
+				<span class="tag is-danger"> {{ errors.price }} </span>
+
+			</div>
+
+			<!-- Order Price End -->
+
+			<!-- Order Quantity Start -->
+
 			<div class="field">
+
 				<label :for="prependWithSide('order-quantity')" class="label">quantity</label>
 				<div class="control">
 					<input type="number" :id="prependWithSide('order-quantity')" class="input" min="0" placeholder="Amount to buy" v-model="order[ side ].quantity" required>
 				</div>
+
 			</div>
 
+			<div class="field" v-if="errors.quantity">
+				
+				<span class="tag is-danger"> {{ errors.quantity }} </span>
+
+			</div>
+
+			<!-- Order Quantity End -->
+
+			<!-- Submit Button Start -->
+
 			<div class="field">
+
 				<div class="control">
 					<button type="submit" class="button is-fullwidth" :class="{ 'is-link': side == 'buy', 'is-danger': side == 'sell' }">{{ buttonTitle }}</button>
 				</div>
+
 			</div>
+
+			<!-- Submit Button End -->
+
 		</form>
 	</div>
 </template>
@@ -87,7 +130,12 @@
 				    	side: 'sell'
 			    	}
 			    },
-			    errors: [],
+			    errors: {
+			    	orderType: false,
+			    	price: false,
+			    	quantity: false,
+
+			    },
 			    orderlines: []
 			}
 		},
@@ -109,14 +157,23 @@
 
 				return this.side == 'sell' ? '#ea675d' : '#4094e8'
 
+			},
+
+			numberOfErrors() {
+				return Object.values( this.errors ).filter( error =>  error ).length
 			}
 
 		},
 
 		methods: {
 			
-			addError( error ) {
-				this.errors.push( { error: error } )
+			addError( title, message ) {
+
+				this.errors = {
+					...this.errors,
+					[title]: message
+				}
+
 			},
 
 			prependWithSide( value ) {
@@ -155,32 +212,41 @@
 
 			},
 
-			checkBuyOrderForm( order ) {
-				// do we have an ordertype
-				// do we have a price
-					// do we have a price which is greater than 0
-				// do we have a quantity 
-				// do we have enough funds to buy that much quantity
+			resetErrors() {
+				
+				this.errors = {
 
-				this.errors = []
+			    	orderType: false,
+			    	price: false,
+			    	quantity: false
+
+			    }
+
+			},
+
+			checkBuyOrderForm( order ) {
+
+				this.resetErrors()
 
 				if( !order.type ) {
-					this.addError( 'Please Select An Order Type' )
+
+					this.addError( 'orderType', 'Please Select An Order Type' )
+					console.log( this.errors )
+
 				}
 
 				if( !order.limitPrice && order.type != 'buy-market' && order.type != 'sell-market' ) {
-					this.addError( 'Please Enter A Price' )
+
+					this.addError( 'price', 'Please Enter A Price' )
+					console.log( this.errors )
+
 				}
 
 				if( !order.quantity ) {
-					this.addError( 'Please Enter A Quantity' )
+					this.addError( 'quantity', 'Please Enter A Quantity' )
 				}
 
-				if( ( order.quantity * order.limitPrice ) > this.currentSession.currentCapital ) {
-					this.addError( 'Insufficient Funds For This Order' )
-				}
-
-				if( this.errors.length == 0 ) {			
+				if( this.numberOfErrors == 0 ) {			
 
 					order.orderId = uuidv4()
 					order.processed = false
