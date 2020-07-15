@@ -127,4 +127,13 @@
 		justify-content: flex-end;		
 	}
 
+	.close span {
+		transition: transform ease .2s;
+		cursor: pointer;
+	}
+
+	.close span:hover {
+		transform: scale(1.2);
+	}
+
 </style>
