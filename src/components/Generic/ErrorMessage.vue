@@ -1,36 +1,27 @@
 <template>
 	
-	<transition name="fade">
+	<plab-transition name="fade">
 		<div class="field" v-if="message">
 					
 			<span class="tag is-danger is-light"> {{ message }} </span>
 
 		</div>
-	</transition>
+	</plab-transition>
 
 </template>
 
 <script>
 	
+	import PlabTransition from '@components/Generic/PlabTransition.vue'
+
 	export default {
 
 		name: 'ErrorMessage',
-		props: ['message']
+		props: ['message'],
+		components: {
+			PlabTransition
+		}
 
 	}
 
 </script>
-
-<style scoped>
-	
-	/* THIS ANIMATION IS A DUPLICATE, USED AT SESSION CHART FOR FLOATINGBOXS  */
-
-	.fade-enter-active, .fade-leave-active {
-		transition: opacity ease .3s;
-	}
-
-	.fade-enter, .fade-leave-to {
-		opacity: 0;
-	}
-
-</style>

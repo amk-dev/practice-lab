@@ -3,7 +3,7 @@
 
 		<div :id="containerId"></div>
 		
-		<transition name="fade">
+		<plab-transition name="fade">
 			
 			<floating-box
 				:currently-active-box.sync="active"
@@ -15,9 +15,9 @@
 
 			</floating-box>
 
-		</transition>
+		</plab-transition>
 
-		<transition name="fade">
+		<plab-transition name="fade">
 
 			<floating-box 
 				:currently-active-box.sync="active" 
@@ -30,9 +30,9 @@
 
 			</floating-box>
 
-		</transition>
+		</plab-transition>
 
-		<transition name="fade">
+		<plab-transition name="fade">
 
 			<floating-box 
 				:currently-active-box.sync="active" 
@@ -45,9 +45,9 @@
 
 			</floating-box>
 
-		</transition>
+		</plab-transition>
 
-		<transition name="fade">
+		<plab-transition name="fade">
 			
 			<floating-box 
 				:currently-active-box.sync="active" 
@@ -60,10 +60,10 @@
 
 			</floating-box>
 
-		</transition>
+		</plab-transition>
 
 	
-		<transition name="fade">
+		<plab-transition name="fade">
 			
 			<floating-box 
 				:currently-active-box.sync="active" 
@@ -76,15 +76,15 @@
 
 			</floating-box>
 
-		</transition>	
+		</plab-transition>	
 
-		<transition name="fade">
+		<plab-transition name="fade">
 		<modal-component v-model="sessionDetailsModal">
 			
 			<in-chart-session-details @closeModal=" sessionDetailsModal = false "></in-chart-session-details>
 	
 		</modal-component>
-		</transition>
+		</plab-transition>
 
 
 		<notifications></notifications>
@@ -105,6 +105,7 @@
 	import BarSpeed from './BarSpeed/BarSpeed.vue'
 	import ModalComponent from './Generic/ModalComponent.vue'
 	import InChartSessionDetails from './Details/InChartSessionDetails.vue'
+	import PlabTransition from '@components/Generic/PlabTransition.vue'
 
 	ChartApiMixin.methods.getBars = getBarsSession
 	ChartApiMixin.methods.subscribeBars = subscribeBarsSession
@@ -124,7 +125,8 @@
 			Orders,
 			BarSpeed,
 			ModalComponent,
-			InChartSessionDetails
+			InChartSessionDetails,
+			PlabTransition
 		},
 		data: () => {
 			return {
@@ -219,12 +221,6 @@
 		z-index: 1
 	}
 
-	.fade-enter-active, .fade-leave-active {
-		transition: opacity .2s;
-	}
-
-	.fade-enter, .fade-leave-to {
-		opacity: 0;
-	}
+	
 
 </style>

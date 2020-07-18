@@ -1,9 +1,9 @@
 <template>
-	<transition name="fade">
+	<plab-transition name="fade">
 		<div class="notification-box" :class="{ 'success': context == 'success', 'failure': context == 'failure', 'info': context == 'info' }">
 			<span>{{ message }}</span>
 		</div>
-	</transition>
+	</plab-transition>
 </template>
 
 <script>
@@ -11,10 +11,14 @@
 	import successAudio from './../../assets/success.ogg'
 	import failureAudio from './../../assets/error.ogg'
 	import infoAudio from './../../assets/info.ogg'
+	import PlabTransition from '@components/Generic/PlabTransition.vue'
 
 	export default {	
 		name: 'NotificationBox',
 		props: ['message', 'context'],
+		components: {
+			PlabTransition
+		},
 		data() {
 			return {
 				type: '',
@@ -32,6 +36,8 @@
 
 		},
 		mounted() {
+
+			console.log('Mounting Notification')
 
 			let sources = {
 				'success': successAudio,
@@ -55,6 +61,7 @@
 		font-family: 'Lato';
 		background: #23262b;
 		color: #ccc;
+		z-index: 999;
 	}
 
 	.success {
@@ -67,16 +74,6 @@
 
 	.info {
 		border-left: 4px solid #4fc3f7;
-	}
-
-	/* THIS ANIMATION IS A DUPLICATE, USED AT SESSION CHART FOR FLOATINGBOXS  */
-
-	.fade-enter-active, .fade-leave-active {
-		transition: opacity ease .3s;
-	}
-
-	.fade-enter, .fade-leave-to {
-		opacity: 0;
 	}
 
 </style>
