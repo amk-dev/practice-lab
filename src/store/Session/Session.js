@@ -15,7 +15,8 @@ export default {
 			timeframe: null,
 			startDate: null,
 			endDate: null,
-			initialBalance: null
+			initialBalance: null,
+			sessions: []
 
 		}
 
@@ -67,6 +68,12 @@ export default {
 
 			return state.endDate
 
+		},
+
+		allSessions: ( state ) => {
+
+			return state.sessions
+
 		}
 	
 	},
@@ -82,6 +89,12 @@ export default {
 			state.startDate = session.startDate
 			state.endDate = session.endDate
 			state.initialBalance = session.marginAvailable
+
+		},
+
+		SET_ALL_SESSIONS( state, sessions ) {
+
+			state.sessions = sessions
 
 		}
 
@@ -105,36 +118,20 @@ export default {
 				throw new Error('session-does-not-exist')
 			}
 			
+		},
+
+		async getAllSessions( { commit } ) {
+
+			let res = await realtimedb.ref('/sessions').once('value')
+			let sessions = res.val()
+
+			if( sessions ) {
+
+				commit('SET_ALL_SESSIONS', sessions)
+
+			}
+
 		}
 	}
 
 }
-
-// function getChangeInPosition( previous, current ) {
-
-// 	if( Math.abs( previous - current ) > Math.abs( previous ) ) {
-
-//         return {
-//             squredOff: Math.abs(previous),
-//             added: Math.abs( current )
-//         }
-
-// 	} else if( ( Math.abs(current)  - Math.abs(previous) )  > 0 ) {
-
-//         return {
-
-//             squredOff: 0,
-//             added: Math.abs(current)  - Math.abs(previous)
-
-//         }
-
-// 	} else {
-        
-//         return {
-//             squredOff: Math.abs(previous) - Math.abs(current),
-//             added: 0
-//         }    
-    
-//     }
-
-// }

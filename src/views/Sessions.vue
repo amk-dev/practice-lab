@@ -6,11 +6,52 @@
 			<div class="column">
 
 				<div class="dashboard-content-main">
-					
-					<div class="section your-sessions">
 
-						<h1 class="title is-4 section-title">Your Sessions</h1>
-						<new-session-card @click.native="showSessionForm = !showSessionForm"></new-session-card>
+					<div class="columns">
+					
+						<div class="column">
+
+							<div class="your-sessions">
+
+								<h1 class="title is-4 section-title">Your Sessions</h1>
+								<new-session-card @click.native="showSessionForm = !showSessionForm"></new-session-card>
+
+							</div>
+
+						</div>
+
+					</div>
+
+					<div class="columns">	
+						
+						<div class="column is-12">
+							
+							<div class="columns is-multiline">
+								
+								
+								<div class="column is-6">
+									
+									<session-card :session="{name: 'Mastering VWAP', symbol: 'ICICIBANK', timeframe: '1 Minute', profit: 1000}"></session-card>
+
+								</div>
+
+								<div class="column is-6">
+									
+									<session-card :session="{name: 'Mastering VWAP', symbol: 'ICICIBANK', timeframe: '1 Minute', profit: 1000}"></session-card>
+
+								</div>
+
+								<div class="column is-6">
+									
+									<session-card :session="{name: 'Mastering VWAP', symbol: 'ICICIBANK', timeframe: '1 Minute', profit: 1000}"></session-card>
+
+								</div>
+
+								
+
+							</div>
+
+						</div>
 
 					</div>
 
@@ -35,6 +76,9 @@
 	import NewSessionCard from './../components/NewSessionCard.vue'
 	import NewSessionForm from './../components/NewSessionForm.vue'
 	import PlabTransition from './../components/Generic/PlabTransition.vue'
+	import SessionCard from '@components/Dashboard/SessionCard.vue'
+
+	import { mapGetters } from 'vuex'
 	
 	export default {
 		name: 'Sessions',
@@ -47,11 +91,23 @@
 			}
 
 		},
+		computed: {
+
+			...mapGetters(['allSessions'])
+
+		},
 		components: {
 			DashboardNavbar,
 			NewSessionCard,
 			NewSessionForm,
-			PlabTransition
+			PlabTransition,
+			SessionCard
+		},
+
+		mounted() {
+
+			this.$store.dispatch('getAllSessions')
+
 		}
 	}
 

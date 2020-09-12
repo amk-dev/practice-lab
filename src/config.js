@@ -1,4 +1,9 @@
-import firebase from 'firebase'
+import * as firebase from 'firebase/app'
+
+import 'firebase/auth'
+import 'firebase/database'
+
+console.log(`firebase config is executing`)
 
 const firebaseConfig = {
   	apiKey: "AIzaSyCkGWxQSDTx_2cBletpyyaHdqZdm3zKTtw",
@@ -11,8 +16,16 @@ const firebaseConfig = {
 	measurementId: "G-J5V8YNGH2D"
 };
 
-const app = firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
-export const realtimedb = app.database()
+export const realtimedb = firebase.database()
+// export const firestore = firebase.firestore()
+export const auth = firebase.auth()
 
-export const firestore = app.firestore()
+console.log( firebase )
+
+export const authProviders = {
+
+	'GoogleAuthProvider': firebase.auth.GoogleAuthProvider
+
+}

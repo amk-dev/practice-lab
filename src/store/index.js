@@ -8,6 +8,7 @@ import Session from './Session/Session.js'
 import Orders from './Orders/Orders.js'
 import Notifications from './Notifications/Notifications.js'
 import API from './Api/Api.js'
+import User from './User/User.js'
 
 Vue.use(Vuex);
 
@@ -38,7 +39,7 @@ const chartingLibraryOrderLineRemover = store => {
 
 export default new Vuex.Store({
 	modules: {
-		Session, Orders, Notifications, API
+		Session, Orders, Notifications, API, User
 	},
 	plugins: [ chartingLibraryOrderLineRemover ]
 });
